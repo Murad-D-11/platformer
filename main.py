@@ -1,12 +1,26 @@
 import pygame
-from Classes.player import Player
 
-# Variables and Constants
-running = True
-movement = None
+from Classes.player import Player
+from Classes.solid import Solid
+
+# ----------------- Variables and Constants ----------------- #
+
+# Colours
 WHITE = (255, 255, 255)
-x = 1152 / 2
-y = 864 / 2
+
+# Jump logic
+GRAVITY = 1
+JUMP_HEIGHT = 10
+Y_VELOCITY = JUMP_HEIGHT
+
+# Booleans
+running = True
+jumping = False
+
+# Starting coordinates
+x, y = (1152 / 2), (864 / 2)
+
+# ----------------------------------------------------------- #
 
 # Screen Setup
 pygame.init()
@@ -20,32 +34,39 @@ player = Player(screen, WHITE, x, y, 20, 20)
 while running:
     screen.fill((0, 0, 0))
 
+    playerHitbox = pygame.Rect(x, y, 20, 20)
+    surfaceHitbox = pygame.Rect(426, 452, 300, 20)
+    
+    collision = playerHitbox.colliderect(surfaceHitbox)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                movement = "left"
-            if event.key == pygame.K_d:
-                movement = "right"
-            if event.key == pygame.K_w:
-                movement = "up"
+    # Keyboard event listener
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_a]:
+        x -= 5
+    if keys[pygame.K_d]:
+        x += 5
+    if keys[pygame.K_w]:
+        jumping = True
 
-        elif event.type == pygame.KEYUP:
-            if event.key in [pygame.K_a, pygame.K_d, pygame.K_w]:
-                movement = None
+    # Jumping/falling logic
+    if jumping:
+        y -= Y_VELOCITY
+        Y_VELOCITY -= GRAVITY
 
-    if movement == "left":
-        x -= 1
-    if movement == "right":
-        x += 1
-    if movement == "up":
-        y -= 1
+        if Y_VELOCITY < -JUMP_HEIGHT:
+            jumping = False
+            Y_VELOCITY = JUMP_HEIGHT
+    elif collision == False:
+        y += Y_VELOCITY
+        Y_VELOCITY += GRAVITY
 
     player.move(x, y)
 
     pygame.display.flip()
-    clock.tick(144)
+    clock.tick(60)
 
 pygame.quit()
