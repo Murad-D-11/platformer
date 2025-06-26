@@ -67,7 +67,7 @@ while running:
                     player.is_jumping = False
 
     # Update player
-    player.update(dt)
+    player.update(dt, map.tiles)
 
     # Update map
     map.draw_map(screen)
