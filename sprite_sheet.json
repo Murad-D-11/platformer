@@ -1,0 +1,44 @@
+{
+  "sprites": [
+    {
+      "fileName": "brick.png",
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "fileName": "pebbles.png",
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 0
+    },
+    {
+      "fileName": "platform.png",
+      "width": 32,
+      "height": 32,
+      "x": 64,
+      "y": 0
+    },
+    {
+      "fileName": "player_left.png",
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 32
+    },
+    {
+      "fileName": "player_right.png",
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 32
+    }
+  ],
+  "packMode": "grid",
+  "padding": 0,
+  "backgroundColor": "rgba(0, 0, 0, 0)",
+  "spriteSheetWidth": 96,
+  "spriteSheetHeight": 64
+}
