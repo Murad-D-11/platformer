@@ -3,7 +3,6 @@ import pygame
 
 # Internal class imports
 from Classes.player import Player
-from Classes.solid import Solid
 from Classes.spritesheet import Spritesheet
 from Classes.tiles import *
 
@@ -12,77 +11,67 @@ from Classes.tiles import *
 # Colours
 WHITE = (255, 255, 255)
 
-# Jump logic
-GRAVITY = 1
-JUMP_HEIGHT = 10
-Y_VELOCITY = JUMP_HEIGHT
+# Delta-time
+TARGET_FPS = 60
 
 # Booleans
 running = True
-jumping = False
-
-# Starting coordinates
-x, y = (512 / 2), (272 / 2)
 
 # ----------------------------------------------------------- #
 
 # Screen Setup
 pygame.init()
-screen = pygame.display.set_mode(size=(512, 272), vsync=1)
+screen = pygame.display.set_mode(size=(512, 384), vsync=1)
 
 # Other Objects Setup
 clock = pygame.time.Clock()
-player = Player(screen, WHITE, x, y, 16, 16)
 
 # Load player and spritesheet
 spritesheet = Spritesheet('sprite_sheet.png')
-player_img = spritesheet.parse_sprite('player.png')
-player_rect = player_img.get_rect()
+player = Player()
 
 # Loads and sets up the map
 map = TileMap('Maps/level_test.csv', spritesheet)
-player_rect.x, player_rect.y = map.start_x, map.start_y
+player.position.x, player.position.y = map.start_x, map.start_y
 
 # Screen remains open
 while running:
     screen.fill((0, 0, 0))
 
-    # Collision logic
-    player_hitbox = pygame.Rect(x, y, 16, 16)
-    surface_hitbox = pygame.Rect(256, 176, 300, 20)
-    collision = player_hitbox.colliderect(surface_hitbox)
+    # Delta-time coefficient
+    dt = clock.tick(60) * 0.001 * TARGET_FPS
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # Keyboard event listener
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_a]:
-        x -= 5
-    if keys[pygame.K_d]:
-        x += 5
-    if keys[pygame.K_w]:
-        jumping = True
+        # Keyboard event listener
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                player.image = Spritesheet('sprite_sheet.png').parse_sprite('player_left.png')
+                player.LEFT_KEY = True
+            elif event.key == pygame.K_d:
+                player.image = Spritesheet('sprite_sheet.png').parse_sprite('player_right.png')
+                player.RIGHT_KEY = True
+            elif event.key == pygame.K_w:
+                player.jump()
 
-    # Jumping/falling logic
-    if jumping:
-        y -= Y_VELOCITY
-        Y_VELOCITY -= GRAVITY
-
-        if Y_VELOCITY < -JUMP_HEIGHT:
-            jumping = False
-            Y_VELOCITY = JUMP_HEIGHT
-    elif collision == False:
-        y += Y_VELOCITY
-        Y_VELOCITY += GRAVITY
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_a:
+                player.LEFT_KEY = False
+            elif event.key == pygame.K_d:
+                player.RIGHT_KEY = False
+            elif event.key == pygame.K_w:
+                if player.is_jumping:
+                    # player.velocity.y *= 0.25
+                    player.is_jumping = False
 
     # Update player
-    player.move(x, y)
-    screen.blit(player_img, (map.start_x, map.start_y))
+    player.update(dt)
 
     # Update map
     map.draw_map(screen)
+    player.draw(screen)
 
     pygame.display.flip()
     clock.tick(60)
