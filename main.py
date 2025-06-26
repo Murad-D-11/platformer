@@ -1,7 +1,11 @@
+# External imports
 import pygame
 
+# Internal class imports
 from Classes.player import Player
 from Classes.solid import Solid
+from Classes.spritesheet import Spritesheet
+from Classes.tiles import *
 
 # ----------------- Variables and Constants ----------------- #
 
@@ -18,26 +22,35 @@ running = True
 jumping = False
 
 # Starting coordinates
-x, y = (1152 / 2), (864 / 2)
+x, y = (512 / 2), (272 / 2)
 
 # ----------------------------------------------------------- #
 
 # Screen Setup
 pygame.init()
-screen = pygame.display.set_mode(size=(1152, 864), vsync=1)
+screen = pygame.display.set_mode(size=(512, 272), vsync=1)
 
 # Other Objects Setup
 clock = pygame.time.Clock()
-player = Player(screen, WHITE, x, y, 20, 20)
+player = Player(screen, WHITE, x, y, 16, 16)
+
+# Load player and spritesheet
+spritesheet = Spritesheet('sprite_sheet.png')
+player_img = spritesheet.parse_sprite('player.png')
+player_rect = player_img.get_rect()
+
+# Loads and sets up the map
+map = TileMap('Maps/level_test.csv', spritesheet)
+player_rect.x, player_rect.y = map.start_x, map.start_y
 
 # Screen remains open
 while running:
     screen.fill((0, 0, 0))
 
-    playerHitbox = pygame.Rect(x, y, 20, 20)
-    surfaceHitbox = pygame.Rect(426, 452, 300, 20)
-    
-    collision = playerHitbox.colliderect(surfaceHitbox)
+    # Collision logic
+    player_hitbox = pygame.Rect(x, y, 16, 16)
+    surface_hitbox = pygame.Rect(256, 176, 300, 20)
+    collision = player_hitbox.colliderect(surface_hitbox)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -64,7 +77,12 @@ while running:
         y += Y_VELOCITY
         Y_VELOCITY += GRAVITY
 
+    # Update player
     player.move(x, y)
+    screen.blit(player_img, (map.start_x, map.start_y))
+
+    # Update map
+    map.draw_map(screen)
 
     pygame.display.flip()
     clock.tick(60)
