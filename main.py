@@ -1,5 +1,7 @@
 # External imports
 import pygame
+import random
+import os
 
 # Internal class imports
 from Classes.player import Player
@@ -8,10 +10,14 @@ from Classes.tiles import *
 
 # ----------------- Variables and Constants ----------------- #
 
+# Music
+MUSIC_FOLDER = 'Music'
+SONG_END = pygame.USEREVENT + 1
+
 # Colours
 WHITE = (255, 255, 255)
 
-# Delta-time
+# Delta-timed
 TARGET_FPS = 60
 
 # Booleans
@@ -32,11 +38,29 @@ player = Player()
 
 # Loads and sets up the map
 map = TileMap('Maps/level_test.csv', spritesheet)
-player.position.x, player.position.y = map.start_x, map.start_y
+player.set_start_position(map.start_x, map.start_y)
+
+# Initialize mixer
+pygame.mixer.init()
+pygame.mixer.music.set_endevent(SONG_END)
+
+# Shuffle music
+music_files = [file for file in os.listdir(MUSIC_FOLDER) if file.endswith(('.mp3', '.ogg', '.wav'))]
+random.shuffle(music_files)
+
+# Music state
+current_song_index = 0
+pygame.mixer.music.load(os.path.join(MUSIC_FOLDER, music_files[current_song_index]))
+pygame.mixer.music.play()
+
+# ------------------------ Functions ------------------------ #
+
+# ----------------------------------------------------------- #
 
 # Screen remains open
 while running:
-    screen.fill((0, 0, 0))
+    # Remove trail
+    screen.fill(WHITE)
 
     # Delta-time coefficient
     dt = clock.tick(60) * 0.001 * TARGET_FPS
@@ -54,7 +78,7 @@ while running:
                 player.image = Spritesheet('sprite_sheet.png').parse_sprite('player_right.png')
                 player.RIGHT_KEY = True
             elif event.key == pygame.K_w:
-                player.jump()
+                player.jump(8)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
@@ -65,6 +89,23 @@ while running:
                 if player.is_jumping:
                     # player.velocity.y *= 0.25
                     player.is_jumping = False
+
+        # Starts new song
+        elif event.type == SONG_END:
+            current_song_index += 1
+            if current_song_index < len(music_files):
+                pygame.mixer.music.load(os.path.join(MUSIC_FOLDER, music_files[current_song_index]))
+                pygame.mixer.music.play()
+            else: # Loops
+                current_song_index = 0
+                random.shuffle(music_files)
+                pygame.mixer.music.load(os.path.join(MUSIC_FOLDER, music_files[current_song_index]))
+                pygame.mixer.music.play()
+
+
+    # Resets player if out of bounds
+    if player.rect.y > 384:
+        player.reset_position()
 
     # Update player
     player.update(dt, map.tiles)
