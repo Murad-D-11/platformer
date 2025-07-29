@@ -9,7 +9,7 @@ class Tile(pygame.sprite.Sprite):
 
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x, self.rect.y))
-        pygame.draw.rect(surface, (255, 0, 0), self.rect, 1)
+        # pygame.draw.rect(surface, (255, 0, 0), self.rect, 1) # hitbox
 
 class TileMap():
     def __init__(self, filename, spritesheet):
