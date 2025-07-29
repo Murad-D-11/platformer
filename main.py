@@ -1,3 +1,9 @@
+# TO-DO List:
+# Create multiple levels
+# Make the "Fin" tile operational
+# Add a bunch of other fun quirks
+# Create a menu and other GUI crap
+
 # External imports
 import pygame
 import random
@@ -10,17 +16,11 @@ from Classes.tiles import *
 
 # ----------------- Variables and Constants ----------------- #
 
-# Music
 MUSIC_FOLDER = 'Music'
 SONG_END = pygame.USEREVENT + 1
-
-# Colours
 WHITE = (255, 255, 255)
-
-# Delta-timed
 TARGET_FPS = 60
 
-# Booleans
 running = True
 
 # ----------------------------------------------------------- #
@@ -78,7 +78,7 @@ while running:
                 player.image = Spritesheet('sprite_sheet.png').parse_sprite('player_right.png')
                 player.RIGHT_KEY = True
             elif event.key == pygame.K_w:
-                player.jump(8)
+                player.jump(7)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
