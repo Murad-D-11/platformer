@@ -74,6 +74,12 @@ class MainMenu(Menu):
 
             self.run_display = False
 
+# class LevelsMenu(Menu):
+#     def __init__(self, game):
+#         Menu.__init__(self, game)
+#         self.state = 'Level 1'
+
+
 class OptionsMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
