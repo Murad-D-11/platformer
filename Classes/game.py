@@ -54,11 +54,11 @@ class Game():
                 self.current_menu = self.main_menu
                 break
 
-            self.display.fill(self.WHITE)
+            self.display.fill((0, 76, 153))
 
             # Delta-time coefficient
             dt = self.clock.tick(60) * 0.001 * self.TARGET_FPS
-                        
+
             # Resets player if out of bounds
             if self.player.rect.y > 384:
                 self.player.reset_position()
@@ -104,7 +104,9 @@ class Game():
                         self.player.image = Spritesheet('sprite_sheet.png').parse_sprite('player_right.png')
                         self.player.RIGHT_KEY = True
                     elif event.key == pygame.K_w:
-                        self.player.jump(7)
+                        self.player.jump(7.3)
+                    elif event.key == pygame.K_s and self.player.on_ladder: # descending ladder
+                        self.player.position.y += 32
                     elif event.key == pygame.K_BACKSPACE:
                         self.BACK_KEY = True
 
