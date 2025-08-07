@@ -11,6 +11,7 @@ class Player(pygame.sprite.Sprite):
         self.LEFT_KEY, self.RIGHT_KEY, self.FACING_LEFT = False, False, False
         self.is_jumping, self.on_ground, self.can_midair_jump = False, False, False
         self.last_jump_orb = None
+        self.on_ladder = False
         self.gravity, self.friction =  0.35, -0.15
         self.position, self.velocity = pygame.math.Vector2(0, 0), pygame.math.Vector2(0, 0)
         self.acceleration = pygame.math.Vector2(0, self.gravity)
@@ -36,6 +37,8 @@ class Player(pygame.sprite.Sprite):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
     def update(self, dt, tiles):
+        self.on_ladder = False
+
         self.horizontal_movement(dt)
         self.check_collisions_x(tiles)
 
@@ -53,13 +56,13 @@ class Player(pygame.sprite.Sprite):
 
         self.acceleration.x += self.velocity.x * self.friction
         self.velocity.x += self.acceleration.x * dt
-        self.limit_velocity(5)
+        self.limit_velocity(4)
         self.position.x += self.velocity.x * dt + (self.acceleration.x * 0.5) * (dt * dt)
         self.rect.x = self.position.x
 
     def vertical_movement(self, dt):
         self.velocity.y += self.acceleration.y * dt
-        if self.velocity.y > 7: self.velocity.y = 7 # Limits vertical velocity
+        if self.velocity.y > 12: self.velocity.y = 12 # Limits vertical velocity
         self.position.y += self.velocity.y * dt + (self.acceleration.y * 0.5) * (dt * dt)
         self.rect.bottom = self.position.y
 
@@ -75,12 +78,20 @@ class Player(pygame.sprite.Sprite):
             self.velocity.y -= initial # Starting velocity
             self.on_ground, self.can_midair_jump = False, False
 
+    # Register any contact with any object
     def get_hits(self, tiles):
         hits = []
         
         for entry in tiles:
-            if self.rect.colliderect(entry.get('data')):
-                hits.append(entry.get('data'))
+            tile = entry.get('data')
+            tile_id = entry.get('id')
+
+            if tile_id == 10:  # Special case: spike
+                if hasattr(tile, 'hitbox') and self.rect.colliderect(tile.hitbox):
+                    hits.append(tile)
+            else: # Any other solid tile
+                if self.rect.colliderect(tile.rect):
+                    hits.append(tile)
 
         return hits
     
@@ -100,6 +111,8 @@ class Player(pygame.sprite.Sprite):
                                 self.rect.x = self.position.x
                         elif entry.get('id') == 0: # Batoude
                             self.jump(10)
+                        elif entry.get('id') == 5: # Ladder
+                            self.on_ladder = True
                         elif entry.get('id') == 10: # Spike
                             self.reset_position()
 
@@ -149,3 +162,22 @@ class Player(pygame.sprite.Sprite):
                             if self.last_jump_orb != tile:
                                 self.can_midair_jump = True
                                 self.last_jump_orb = tile
+                        elif entry.get('id') == 5: # Ladder
+                            self.on_ladder = True
+
+                            if self.velocity.y > 0:
+                                # Standing on top of ladder tile (existing check)
+                                if self.rect.bottom <= tile.rect.top + 10:
+                                    self.on_ground = True
+                                    self.is_jumping = False
+                                    self.velocity.y = 0
+                                    self.position.y = tile.rect.top
+                                    self.rect.bottom = self.position.y
+
+                                # NEW: Standing on bottom of ladder tile
+                                elif abs(self.rect.bottom - tile.rect.bottom) <= 10:
+                                    self.on_ground = True
+                                    self.is_jumping = False
+                                    self.velocity.y = 0
+                                    self.position.y = tile.rect.bottom
+                                    self.rect.bottom = self.position.y
