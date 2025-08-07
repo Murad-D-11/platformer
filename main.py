@@ -24,7 +24,7 @@ spritesheet = Spritesheet('sprite_sheet.png')
 player = Player()
 
 # Loads and sets up the map (for debugging purposes)
-map = TileMap('Maps/level_test.csv', spritesheet)
+map = TileMap('Maps/level_3.csv', spritesheet)
 player.set_start_position(map.start_x, map.start_y)
 
 g.player = player
