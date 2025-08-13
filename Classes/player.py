@@ -2,9 +2,17 @@ import pygame
 from Classes.spritesheet import Spritesheet
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, game):
         pygame.sprite.Sprite.__init__(self)
-        self.image = Spritesheet('sprite_sheet.png').parse_sprite('player_right.png')
+
+        self.game = game
+
+        # Sound
+        self.death_sfx = self.game.death_sfx
+        self.jump_sfx = self.game.jump_sfx
+        self.win_sfx = self.game.win_sfx
+
+        self.image = Spritesheet('sprite_sheet.png').parse_sprite('player.png')
         self.rect = self.image.get_rect()
         self.rect.width -= 4
         self.rect.height -= 4
@@ -27,6 +35,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = y
 
     def reset_position(self):
+        self.death_sfx.play()
+
         self.position.x = self.start_x
         self.position.y = self.start_y
         self.velocity = pygame.math.Vector2(0, 0)
@@ -73,6 +83,8 @@ class Player(pygame.sprite.Sprite):
 
     def jump(self, initial):
         if self.on_ground or self.can_midair_jump:
+            self.jump_sfx.play()
+
             self.velocity.y = 0
             self.is_jumping = True
             self.velocity.y -= initial # Starting velocity
@@ -111,6 +123,9 @@ class Player(pygame.sprite.Sprite):
                                 self.rect.x = self.position.x
                         elif entry.get('id') == 0: # Batoude
                             self.jump(10)
+                        elif entry.get('id') == 3:  # Fin tile
+                            self.win_sfx.play()
+                            self.game.handle_level_completion()
                         elif entry.get('id') == 5: # Ladder
                             self.on_ladder = True
                         elif entry.get('id') == 10: # Spike
