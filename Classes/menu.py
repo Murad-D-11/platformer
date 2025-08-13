@@ -21,7 +21,7 @@ class MainMenu(Menu):
         Menu.__init__(self, game)
         self.state = 'Levels'
         self.levelsx, self.levelsy = self.mid_w, self.mid_h + 30
-        self.optionsx, self.optionsy = self.mid_w, self.mid_h + 50
+        self.volumex, self.volumey = self.mid_w, self.mid_h + 50
         self.creditsx, self.creditsy = self.mid_w, self.mid_h + 70
         self.cursor_rect.midtop = ((self.levelsx + self.offset), self.levelsy)
 
@@ -34,7 +34,7 @@ class MainMenu(Menu):
             self.game.display.fill(self.game.BLACK)
             self.game.draw_text("Main Menu", 20, 512 / 2, 384 / 2 - 20)
             self.game.draw_text("Levels", 20, self.levelsx, self.levelsy)
-            self.game.draw_text("Options", 20, self.optionsx, self.optionsy)
+            self.game.draw_text("Volume", 20, self.volumex, self.volumey)
             self.game.draw_text("Credits", 20, self.creditsx, self.creditsy)
             self.draw_cursor()
             self.blit_screen()
@@ -42,9 +42,9 @@ class MainMenu(Menu):
     def move_cursor(self):
         if self.game.DOWN_KEY: # down
             if self.state == 'Levels':
-                self.cursor_rect.midtop = ((self.optionsx + self.offset), self.optionsy)
-                self.state = 'Options'
-            elif self.state == 'Options':
+                self.cursor_rect.midtop = ((self.volumex + self.offset), self.volumey)
+                self.state = 'Volume'
+            elif self.state == 'Volume':
                 self.cursor_rect.midtop = ((self.creditsx + self.offset), self.creditsy)
                 self.state = 'Credits'
             elif self.state == 'Credits':
@@ -54,50 +54,49 @@ class MainMenu(Menu):
             if self.state == 'Levels':
                 self.cursor_rect.midtop = ((self.creditsx + self.offset), self.creditsy)
                 self.state = 'Credits'
-            elif self.state == 'Options':
+            elif self.state == 'Volume':
                 self.cursor_rect.midtop = ((self.levelsx + self.offset), self.levelsy)
                 self.state = 'Levels'
             elif self.state == 'Credits':
-                self.cursor_rect.midtop = ((self.optionsx + self.offset), self.optionsy)
-                self.state = 'Options'
+                self.cursor_rect.midtop = ((self.volumex + self.offset), self.volumey)
+                self.state = 'Volume'
 
     def check_input(self):
         self.move_cursor()
 
         if self.game.START_KEY:
             if self.state == 'Levels': # temporary
-                self.game.playing = True
-            elif self.state == 'Options':
-                self.game.current_menu = self.game.options_menu
+                self.game.current_menu = self.game.levels_menu
+            elif self.state == 'Volume':
+                self.game.current_menu = self.game.volume_menu
             elif self.state == 'Credits':
                 self.game.current_menu = self.game.credits_menu
 
             self.run_display = False
 
-# class LevelsMenu(Menu):
-#     def __init__(self, game):
-#         Menu.__init__(self, game)
-#         self.state = 'Level 1'
-
-
-class OptionsMenu(Menu):
+class LevelsMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.state = 'Volume'
-        self.volx, self.voly = self.mid_w, self.mid_h + 20
-        self.controlsx, self.controlsy = self.mid_w, self.mid_h + 40
-        self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
+        self.state = 'Level 1'
+        self.lvl1x, self.lvl1y = self.mid_w, self.mid_h + 20
+        self.lvl2x, self.lvl2y = self.mid_w, self.mid_h + 40
+        self.lvl3x, self.lvl3y = self.mid_w, self.mid_h + 60
+        self.lvl4x, self.lvl4y = self.mid_w, self.mid_h + 80
+        self.lvl5x, self.lvl5y = self.mid_w, self.mid_h + 100
+        self.cursor_rect.midtop = (self.lvl1x + self.offset, self.lvl1y)
 
     def display_menu(self):
         self.run_display = True
-
         while self.run_display:
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Options', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 30)
-            self.game.draw_text('Volume', 15, self.volx, self.voly)
-            self.game.draw_text('Controls', 15, self.controlsx, self.controlsy)
+            self.game.draw_text('Levels', 20, self.mid_w, self.mid_h - 20)
+            self.game.draw_text('Level 1', 15, self.lvl1x, self.lvl1y)
+            self.game.draw_text('Level 2', 15, self.lvl2x, self.lvl2y)
+            self.game.draw_text('Level 3', 15, self.lvl3x, self.lvl3y)
+            self.game.draw_text('Level 4', 15, self.lvl4x, self.lvl4y)
+            self.game.draw_text('Level 5', 15, self.lvl5x, self.lvl5y)
             self.draw_cursor()
             self.blit_screen()
 
@@ -105,16 +104,111 @@ class OptionsMenu(Menu):
         if self.game.BACK_KEY:
             self.game.current_menu = self.game.main_menu
             self.run_display = False
-        elif self.game.UP_KEY or self.game.DOWN_KEY:
-            if self.state == 'Volume':
-                self.state = 'Controls'
-                self.cursor_rect.midtop = (self.controlsx + self.offset, self.controlsy)
-            elif self.state == 'Controls':
-                self.state = 'Volume'
-                self.cursor_rect.midtop = (self.volx + self.offset, self.voly)
+        elif self.game.DOWN_KEY:
+            if self.state == 'Level 1':
+                self.state = 'Level 2'
+                self.cursor_rect.midtop = (self.lvl2x + self.offset, self.lvl2y)
+            elif self.state == 'Level 2':
+                self.state = 'Level 3'
+                self.cursor_rect.midtop = (self.lvl3x + self.offset, self.lvl3y)
+            elif self.state == 'Level 3':
+                self.state = 'Level 4'
+                self.cursor_rect.midtop = (self.lvl4x + self.offset, self.lvl4y)
+            elif self.state == 'Level 4':
+                self.state = 'Level 5'
+                self.cursor_rect.midtop = (self.lvl5x + self.offset, self.lvl5y)
+            elif self.state == 'Level 5':
+                self.state = 'Level 1'
+                self.cursor_rect.midtop = (self.lvl1x + self.offset, self.lvl1y)
+
+        elif self.game.UP_KEY:
+            if self.state == 'Level 1':
+                self.state = 'Level 5'
+                self.cursor_rect.midtop = (self.lvl5x + self.offset, self.lvl5y)
+            elif self.state == 'Level 2':
+                self.state = 'Level 1'
+                self.cursor_rect.midtop = (self.lvl1x + self.offset, self.lvl1y)
+            elif self.state == 'Level 3':
+                self.state = 'Level 2'
+                self.cursor_rect.midtop = (self.lvl2x + self.offset, self.lvl2y)
+            elif self.state == 'Level 4':
+                self.state = 'Level 3'
+                self.cursor_rect.midtop = (self.lvl3x + self.offset, self.lvl3y)
+            elif self.state == 'Level 5':
+                self.state = 'Level 4'
+                self.cursor_rect.midtop = (self.lvl4x + self.offset, self.lvl4y)
+
         elif self.game.START_KEY:
-            # TO-DO: Create a working volume and controls (not) settings
-            pass
+            self.game.playing = True
+            self.game.current_level = int(self.state.split()[-1])
+            self.run_display = False
+
+
+class VolumeMenu(Menu):
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.state = 'Music'
+        self.musicx, self.musicy = self.mid_w - 100, self.mid_h + 20
+        self.soundx, self.soundy = self.mid_w - 100, self.mid_h + 60
+        self.cursor_rect.midtop = (self.musicx + self.offset, self.musicy)
+
+        self.sliders = [
+            Slider(game, (self.musicx + 170, self.musicy), (150, 15), 0.5, 0, 100),
+            Slider(game, (self.soundx + 170, self.soundy), (150, 15), 0.5, 0, 100)
+        ]
+
+    def display_menu(self):
+        self.run_display = True
+
+        while self.run_display:
+            self.game.check_events()
+
+            self.game.display.fill(self.game.BLACK)
+
+            mouse_pos = pygame.mouse.get_pos()
+            mouse = pygame.mouse.get_pressed()
+
+            # Draw title & labels
+            self.game.draw_text('Volume', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 60)
+            self.game.draw_text('Music', 15, self.musicx, self.musicy)
+            self.game.draw_text('Sound', 15, self.soundx, self.soundy)
+
+            # Update sliders
+            for i, slider in enumerate(self.sliders):
+                if slider.container_rect.collidepoint(mouse_pos) and mouse[0]:
+                    slider.move_slider(mouse_pos)
+                    val = slider.get_value() / 100 # 0.0 to 1.0
+
+                    if i == 0:  # Music slider
+                        pygame.mixer.music.set_volume(val)
+                        self.game.music_volume = val
+                    elif i == 1:  # Sound slider
+                        for sfx in self.game.sound_effects:
+                            sfx.set_volume(val)
+                        self.game.sound_volume = val
+
+                slider.render()
+
+            # Back key returns to main menu
+            if self.game.BACK_KEY:
+                self.game.current_menu = self.game.main_menu
+                self.run_display = False
+
+            self.blit_screen()
+
+    # def check_input(self):
+    #     if self.game.BACK_KEY:
+    #         self.game.current_menu = self.game.main_menu
+    #         self.run_display = False
+    #     elif self.game.UP_KEY or self.game.DOWN_KEY:
+    #         if self.state == 'Music':
+    #             self.state = 'Sound'
+    #             self.cursor_rect.midtop = (self.soundx + self.offset, self.soundy)
+    #         elif self.state == 'Sound':
+    #             self.state = 'Music'
+    #             self.cursor_rect.midtop = (self.musicx + self.offset, self.musicy)
+    #     elif self.game.START_KEY:
+    #         pass
 
 class CreditsMenu(Menu):
     def __init__(self, game):
@@ -136,3 +230,34 @@ class CreditsMenu(Menu):
             self.game.draw_text('Song 1 by Masasuke M', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 30)
             self.game.draw_text('Song 2 by Timmy Ong', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 50)
             self.blit_screen()
+
+class Slider:
+    def __init__(self, game, pos: tuple, size: tuple, init_val: float, min: int, max: int):
+        self.game = game
+        
+        self.pos = pos
+        self.size = size
+
+        self.slider_left_pos = self.pos[0] - (size[0] // 2)
+        self.slider_right_pos = self.pos[0] + (size[0] // 2)
+        self.slider_top_pos = self.pos[1] - (size[1] // 2)
+
+        self.min = min
+        self.max = max
+        self.init_val = (self.slider_right_pos - self.slider_left_pos) * init_val # <-- in percentage
+
+        self.container_rect = pygame.Rect(self.slider_left_pos, self.slider_top_pos, self.size[0], self.size[1])
+        self.button_rect = pygame.Rect(self.slider_left_pos + self.init_val - 5, self.slider_top_pos, 10, self.size[1])
+
+    def move_slider(self, mouse_pos):
+        self.button_rect.centerx = mouse_pos[0]
+
+    def render(self):
+        pygame.draw.rect(self.game.display, (96, 96, 96), self.container_rect)
+        pygame.draw.rect(self.game.display, self.game.WHITE, self.button_rect)
+
+    def get_value(self):
+        val_range = self.slider_right_pos- self.slider_left_pos - 1
+        button_val = self.button_rect.centerx - self.slider_left_pos
+
+        return (button_val / val_range) * (self.max - self.min) + self.min
