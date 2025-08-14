@@ -113,29 +113,70 @@ class MainMenu(Menu):
 
 class LevelsMenu(Menu):
     def __init__(self, game):
-        Menu.__init__(self, game)
+        super().__init__(game)
         self.state = 'Level 1'
+
+        # Level coordinates
         self.lvl1x, self.lvl1y = self.mid_w, self.mid_h + 20
         self.lvl2x, self.lvl2y = self.mid_w, self.mid_h + 40
         self.lvl3x, self.lvl3y = self.mid_w, self.mid_h + 60
         self.lvl4x, self.lvl4y = self.mid_w, self.mid_h + 80
         self.lvl5x, self.lvl5y = self.mid_w, self.mid_h + 100
+
+        # Cursor position
         self.cursor_rect.midtop = (self.lvl1x + self.offset, self.lvl1y)
+
+        # Title flash timer
+        self.title_colour_timer = 0
+        self.title_colour_state = True
+
+        # Use the same colours as MainMenu
+        self.colour1 = (40, 86, 17)  # Dark Grey
+        self.colour2 = (40, 40, 40)  # Grey
+
+        # Load icons and tab
+        self.icon = pygame.image.load('Images/icon.png')
+        self.tab = pygame.image.load('Images/tab.png')
 
     def display_menu(self):
         self.run_display = True
+        clock = pygame.time.Clock()
+
         while self.run_display:
             self.game.check_events()
             self.check_input()
+
+            # Update timer
+            self.title_colour_timer += clock.get_time()
+            if self.title_colour_timer > 500:
+                self.title_colour_state = not self.title_colour_state
+                self.title_colour_timer = 0
+
+            # Title colours
+            chambers_colour = self.colour1 if self.title_colour_state else self.colour2
+            robo_colour = self.colour2 if self.title_colour_state else self.colour1
+
+            # Draw background, tab, icon
             self.game.display.fill(self.game.BLACK)
+            self.game.display.blit(self.tab, (self.mid_w - 144, self.mid_h - 170))
+            self.game.display.blit(self.icon, (45, 30))
+
+            # Draw titles
+            self.game.draw_text("Robo Trials", 20, self.mid_w, self.mid_h - 130, robo_colour)
+            self.game.draw_text("8 Bit Chambers", 20, self.mid_w, self.mid_h - 110, chambers_colour)
+
+            # Draw levels
             self.game.draw_text('Levels', 20, self.mid_w, self.mid_h - 20)
             self.game.draw_text('Level 1', 15, self.lvl1x, self.lvl1y)
             self.game.draw_text('Level 2', 15, self.lvl2x, self.lvl2y)
             self.game.draw_text('Level 3', 15, self.lvl3x, self.lvl3y)
             self.game.draw_text('Level 4', 15, self.lvl4x, self.lvl4y)
             self.game.draw_text('Level 5', 15, self.lvl5x, self.lvl5y)
+
+            # Draw cursor
             self.draw_cursor()
             self.blit_screen()
+            clock.tick(60)
 
     def check_input(self):
         if self.game.BACK_KEY:
@@ -157,7 +198,6 @@ class LevelsMenu(Menu):
             elif self.state == 'Level 5':
                 self.state = 'Level 1'
                 self.cursor_rect.midtop = (self.lvl1x + self.offset, self.lvl1y)
-
         elif self.game.UP_KEY:
             if self.state == 'Level 1':
                 self.state = 'Level 5'
@@ -174,7 +214,6 @@ class LevelsMenu(Menu):
             elif self.state == 'Level 5':
                 self.state = 'Level 4'
                 self.cursor_rect.midtop = (self.lvl4x + self.offset, self.lvl4y)
-
         elif self.game.START_KEY:
             self.game.playing = True
             self.game.current_level = int(self.state.split()[-1])
