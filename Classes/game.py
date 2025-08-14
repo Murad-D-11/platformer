@@ -33,10 +33,11 @@ class Game():
         # Sound
         self.death_sfx = pygame.mixer.Sound('Sounds/death.wav')
         self.jump_sfx = pygame.mixer.Sound('Sounds/jump.wav')
+        self.victory_sfx = pygame.mixer.Sound('Sounds/victory.wav')
         self.win_sfx = pygame.mixer.Sound('Sounds/win.wav')
         self.scroll_sfx = pygame.mixer.Sound('Sounds/scroll.wav')
         self.select_sfx = pygame.mixer.Sound('Sounds/select.wav')
-        self.sound_effects = [self.death_sfx, self.jump_sfx, self.win_sfx, self.scroll_sfx, self.select_sfx]
+        self.sound_effects = [self.death_sfx, self.jump_sfx, self.victory_sfx, self.win_sfx, self.scroll_sfx, self.select_sfx]
 
         # Volume
         self.music_volume = 0.5
@@ -64,6 +65,7 @@ class Game():
         self.levels_menu = LevelsMenu(self)
         self.volume_menu = VolumeMenu(self)
         self.credits_menu = CreditsMenu(self)
+        self.victory_menu = VictoryMenu(self)
         self.current_menu = self.main_menu
 
     def game_loop(self):
@@ -209,9 +211,11 @@ class Game():
                     elif event.key == pygame.K_BACKSPACE:
                         self.BACK_KEY = False
     
-    def draw_text(self, text, size, x, y):
+    def draw_text(self, text, size, x, y, colour=None):
+        if colour is None:
+            colour = self.WHITE
         font = pygame.font.Font(self.font_name, size)
-        text_surface = font.render(text, True, self.WHITE)
+        text_surface = font.render(text, True, colour)
         text_rect = text_surface.get_rect()
         text_rect.center = (x, y)
         self.display.blit(text_surface, text_rect)
@@ -222,9 +226,9 @@ class Game():
             selected_map = self.levels[self.current_level]  # from main.py
             self.map = selected_map
             self.player.set_start_position(selected_map.start_x, selected_map.start_y)
-        # else:
-        #     self.playing = False
-        #     self.current_menu = VictoryMenu(self)  # Placeholder menu
+        else:
+            self.playing = False
+            self.current_menu = VictoryMenu(self)
 
     def music_mixer(self):
         # Initialize mixer
