@@ -1,4 +1,4 @@
-import pygame
+import pygame, colorsys
 
 class Menu():
     def __init__(self, game):
@@ -19,25 +19,62 @@ class Menu():
 class MainMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
+
         self.state = 'Levels'
+        
         self.levelsx, self.levelsy = self.mid_w, self.mid_h + 30
         self.volumex, self.volumey = self.mid_w, self.mid_h + 50
         self.creditsx, self.creditsy = self.mid_w, self.mid_h + 70
-        self.cursor_rect.midtop = ((self.levelsx + self.offset), self.levelsy)
+        self.cursor_rect.midtop = (self.levelsx + self.offset, self.levelsy)
+
+        self.icon = pygame.image.load('Images/icon.png')
+        self.tab = pygame.image.load('Images/tab.png')
+
+        # Title flash timer
+        self.title_colour_timer = 0
+        self.title_colour_state = True # True = colour1, False = colour2
+
+        # Colors (you can change these)
+        self.colour1 = (40, 86, 17) # Dark Grey
+        self.colour2 = (40, 40, 40) # Grey
 
     def display_menu(self):
         self.run_display = True
+        clock = pygame.time.Clock()
 
         while self.run_display:
             self.game.check_events()
             self.check_input()
+
+            # Update timer
+            self.title_colour_timer += clock.get_time()
+            if self.title_colour_timer > 500: # Switch every 0.5s
+                self.title_colour_state = not self.title_colour_state
+                self.title_colour_timer = 0
+
+            # 8 Bit Chambers colour
+            chambers_colour = self.colour1 if self.title_colour_state else self.colour2
+
+            # Robo Trials opposite colour
+            robo_colour = self.colour2 if self.title_colour_state else self.colour1
+
             self.game.display.fill(self.game.BLACK)
+            self.game.display.blit(self.tab, (self.mid_w - 144, self.mid_h - 170))
+            self.game.display.blit(self.icon, (45, 30))
+
+            # Draw titles with alternating colours
+            self.game.draw_text("Robo Trials", 20, self.mid_w, self.mid_h - 130, robo_colour)
+            self.game.draw_text("8 Bit Chambers", 20, self.mid_w, self.mid_h - 110, chambers_colour)
+
+            # Rest of menu
             self.game.draw_text("Main Menu", 20, 512 / 2, 384 / 2 - 20)
             self.game.draw_text("Levels", 20, self.levelsx, self.levelsy)
             self.game.draw_text("Volume", 20, self.volumex, self.volumey)
             self.game.draw_text("Credits", 20, self.creditsx, self.creditsy)
+
             self.draw_cursor()
             self.blit_screen()
+            clock.tick(60)
 
     def move_cursor(self):
         if self.game.DOWN_KEY: # down
@@ -65,7 +102,7 @@ class MainMenu(Menu):
         self.move_cursor()
 
         if self.game.START_KEY:
-            if self.state == 'Levels': # temporary
+            if self.state == 'Levels':
                 self.game.current_menu = self.game.levels_menu
             elif self.state == 'Volume':
                 self.game.current_menu = self.game.volume_menu
@@ -148,8 +185,11 @@ class VolumeMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
         self.state = 'Music'
+
+        self.volumex, self.volumey = self.mid_w, self.mid_h - 60
         self.musicx, self.musicy = self.mid_w - 100, self.mid_h + 20
         self.soundx, self.soundy = self.mid_w - 100, self.mid_h + 60
+
         self.cursor_rect.midtop = (self.musicx + self.offset, self.musicy)
 
         self.sliders = [
@@ -169,7 +209,7 @@ class VolumeMenu(Menu):
             mouse = pygame.mouse.get_pressed()
 
             # Draw title & labels
-            self.game.draw_text('Volume', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 60)
+            self.game.draw_text('Volume', 20, self.volumex, self.volumey)
             self.game.draw_text('Music', 15, self.musicx, self.musicy)
             self.game.draw_text('Sound', 15, self.soundx, self.soundy)
 
@@ -214,6 +254,11 @@ class CreditsMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
 
+        self.creditsx, self.creditsy = self.mid_w, self.mid_h - 20
+        self.muradx, self.murady = self.mid_w, self.mid_h + 10
+        self.masasukex, self.masasukey = self.mid_w, self.mid_h + 30
+        self.timmyx, self.timmyy = self.mid_w, self.mid_h + 50
+
     def display_menu(self):
         self.run_display = True
 
@@ -225,10 +270,10 @@ class CreditsMenu(Menu):
                 self.run_display = False
 
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Credits', 20, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 - 20)
-            self.game.draw_text('Gameplay and Graphics by Murad D', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 10)
-            self.game.draw_text('Song 1 by Masasuke M', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 30)
-            self.game.draw_text('Song 2 by Timmy Ong', 15, self.game.DISPLAY_W / 2, self.game.DISPLAY_H / 2 + 50)
+            self.game.draw_text('Credits', 20, self.creditsx, self.creditsy)
+            self.game.draw_text('Gameplay and Graphics by Murad D', 15, self.muradx, self.murady)
+            self.game.draw_text('Song 1 by Masasuke M', 15, self.masasukex, self.masasukey)
+            self.game.draw_text('Song 2 by Timmy Ong', 15, self.timmyx, self.timmyy)
             self.blit_screen()
 
 class Slider:
@@ -260,4 +305,62 @@ class Slider:
         val_range = self.slider_right_pos- self.slider_left_pos - 1
         button_val = self.button_rect.centerx - self.slider_left_pos
 
-        return (button_val / val_range) * (self.max - self.min) + self.min
+        return (button_val / val_range) * (self.max - self.min) + self.min # returns volume value
+    
+class VictoryMenu(Menu):
+    def __init__(self, game):
+        super().__init__(game)
+        self.state = 'Main Menu'
+
+        self.winx, self.winy = self.mid_w, self.mid_h - 70
+        self.thxx, self.thxy = self.mid_w, self.mid_h - 30
+        self.menux, self.menuy = self.mid_w, self.mid_h + 50
+        self.exitx, self.exity = self.mid_w, self.mid_h + 70
+
+        self.cursor_rect.midtop = (self.menux + self.offset, self.menuy)
+        self.rainbow_hue = 0
+
+    def display_menu(self):
+        self.run_display = True
+        self.game.victory_sfx.play()
+
+        while self.run_display:
+            self.game.check_events()
+            self.check_input()
+
+            self.game.display.fill(self.game.BLACK)
+
+            # Cycle hue for rainbow
+            self.rainbow_hue = (self.rainbow_hue + 0.005) % 1.0
+            r, g, b = colorsys.hsv_to_rgb(self.rainbow_hue, 1, 1)
+            rainbow_colour = (int(r * 255), int(g * 255), int(b * 255))
+
+            # Draw rainbow "YOU WIN"
+            self.game.draw_text("YOU WIN", 20, self.winx, self.winy, rainbow_colour)
+
+            # Draw other static text
+            self.game.draw_text("THANKS FOR PLAYING", 20, self.thxx, self.thxy)
+            self.game.draw_text("Main Menu", 20, self.menux, self.menuy)
+            self.game.draw_text("Exit", 20, self.exitx, self.exity)
+
+            self.draw_cursor()
+            self.blit_screen()
+
+    def check_input(self):
+        if self.game.BACK_KEY:
+            self.game.current_menu = self.game.main_menu
+            self.run_display = False
+        elif self.game.DOWN_KEY or self.game.UP_KEY:
+            if self.state == 'Main Menu':
+                self.state = 'Exit'
+                self.cursor_rect.midtop = (self.exitx + self.offset, self.exity)
+            elif self.state == 'Exit':
+                self.state = 'Main Menu'
+                self.cursor_rect.midtop = (self.menux + self.offset, self.menuy)
+        elif self.game.START_KEY:
+            if self.state == 'Main Menu':
+                self.game.current_menu = self.game.main_menu
+                self.run_display = False
+            elif self.state == 'Exit':
+                self.game.running, self.game.playing = False, False
+                self.game.current_menu.run_display = False
