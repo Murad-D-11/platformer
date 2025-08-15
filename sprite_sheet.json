@@ -1,0 +1,107 @@
+{
+  "sprites": [
+    {
+      "fileName": "batoude.png",
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "fileName": "brick.png",
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 0
+    },
+    {
+      "fileName": "chain.png",
+      "width": 32,
+      "height": 32,
+      "x": 64,
+      "y": 0
+    },
+    {
+      "fileName": "fin.png",
+      "width": 32,
+      "height": 32,
+      "x": 96,
+      "y": 0
+    },
+    {
+      "fileName": "jump_orb.png",
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 32
+    },
+    {
+      "fileName": "ladder.png",
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 32
+    },
+    {
+      "fileName": "pebbles.png",
+      "width": 32,
+      "height": 32,
+      "x": 64,
+      "y": 32
+    },
+    {
+      "fileName": "platform.png",
+      "width": 32,
+      "height": 32,
+      "x": 96,
+      "y": 32
+    },
+    {
+      "fileName": "player.png",
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 64
+    },
+    {
+      "fileName": "player_fall.png",
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 64
+    },
+    {
+      "fileName": "player_jump.png",
+      "width": 32,
+      "height": 32,
+      "x": 64,
+      "y": 64
+    },
+    {
+      "fileName": "player_walk1.png",
+      "width": 32,
+      "height": 32,
+      "x": 96,
+      "y": 64
+    },
+    {
+      "fileName": "player_walk2.png",
+      "width": 32,
+      "height": 32,
+      "x": 0,
+      "y": 96
+    },
+    {
+      "fileName": "spike.png",
+      "width": 32,
+      "height": 32,
+      "x": 32,
+      "y": 96
+    }
+  ],
+  "packMode": "grid",
+  "padding": 0,
+  "backgroundColor": "rgba(0, 0, 0, 0)",
+  "spriteSheetWidth": 128,
+  "spriteSheetHeight": 128
+}
